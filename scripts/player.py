@@ -12,7 +12,7 @@ class Player:
         self.curr_mov = 'idle_down'
         self.pre_direction = 'down'
         #Load images
-        path = 'images/'
+        path = 'images/player/'
         for name in os.listdir(path):
             surf = pygame.image.load((path + name))
             mov_name = ''
