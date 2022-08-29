@@ -8,7 +8,7 @@ class MapC:
         for key in self.data:
             image = pygame.image.load(image_dir + '/' + self.data[key]).convert()
             image.set_colorkey((0, 0, 0, 0))
-            self.world_data[key] = [image, self.data[key]]
+            self.world_data[key] = [image, self.data[key], '1chunk']
         self.itterate_data = {}
         for id, key in enumerate(self.world_data):
             pos = key.split()
@@ -64,6 +64,7 @@ class MapC:
         chunk_data = {}
         marked = []
         for key in tile_data:
+            tile_name = tile_data[key][1]
             try:
                 # and tile_data[key][1] != 'tile.png'
                 if tile_data[key][0] != None:
@@ -75,16 +76,36 @@ class MapC:
                         if marked_key == key:
                             markedk = True
                     if not markedk:
-                        tmp_surf = pygame.Surface((self.TILE_SIZE*2, self.TILE_SIZE*2))
-                        tmp_surf.blit(tile_data[key][0], (0, 0))
-                        tmp_surf.blit(tile_data[f'{x+self.TILE_SIZE} {y}'][0], (self.TILE_SIZE, 0))
-                        tmp_surf.blit(tile_data[f'{x} {y+self.TILE_SIZE}'][0], (0, self.TILE_SIZE))
-                        tmp_surf.blit(tile_data[f'{x+self.TILE_SIZE} {y+self.TILE_SIZE}'][0], (self.TILE_SIZE, self.TILE_SIZE))
-                        marked.append(key)
-                        marked.append(f'{x+self.TILE_SIZE} {y}')
-                        marked.append(f'{x} {y+self.TILE_SIZE}')
-                        marked.append(f'{x+self.TILE_SIZE} {y+self.TILE_SIZE}')
-                        chunk_data[key] = [tmp_surf, '4chunk', tile_data[key][1]]
+                        if tile_name == 'tile11.png':
+                            if tile_data[f'{x+self.TILE_SIZE} {y}'][1] == tile_name and tile_data[f'{x} {y+self.TILE_SIZE}'][1] == tile_name and tile_data[f'{x+self.TILE_SIZE} {y+self.TILE_SIZE}'][1] == tile_name: 
+                                tmp_surf = pygame.Surface((self.TILE_SIZE*2, self.TILE_SIZE*2))
+                                tmp_surf.blit(tile_data[key][0], (0, 0))
+                                tmp_surf.blit(tile_data[f'{x+self.TILE_SIZE} {y}'][0], (self.TILE_SIZE, 0))
+                                tmp_surf.blit(tile_data[f'{x} {y+self.TILE_SIZE}'][0], (0, self.TILE_SIZE))
+                                tmp_surf.blit(tile_data[f'{x+self.TILE_SIZE} {y+self.TILE_SIZE}'][0], (self.TILE_SIZE, self.TILE_SIZE))
+                                marked.append(key)
+                                marked.append(f'{x+self.TILE_SIZE} {y}')
+                                marked.append(f'{x} {y+self.TILE_SIZE}')
+                                marked.append(f'{x+self.TILE_SIZE} {y+self.TILE_SIZE}')
+                                chunk_data[key] = [tmp_surf, tile_data[key][1], '4chunk']
+                            else:
+                                tile_data[key].append('1chunk')
+                                chunk_data[key] = tile_data[key]
+                        else:
+                            if tile_data[f'{x+self.TILE_SIZE} {y}'][1] != 'tile11.png' and tile_data[f'{x} {y+self.TILE_SIZE}'][1] != 'tile11.png' and tile_data[f'{x+self.TILE_SIZE} {y+self.TILE_SIZE}'][1] != 'tile11.png': 
+                                tmp_surf = pygame.Surface((self.TILE_SIZE*2, self.TILE_SIZE*2))
+                                tmp_surf.blit(tile_data[key][0], (0, 0))
+                                tmp_surf.blit(tile_data[f'{x+self.TILE_SIZE} {y}'][0], (self.TILE_SIZE, 0))
+                                tmp_surf.blit(tile_data[f'{x} {y+self.TILE_SIZE}'][0], (0, self.TILE_SIZE))
+                                tmp_surf.blit(tile_data[f'{x+self.TILE_SIZE} {y+self.TILE_SIZE}'][0], (self.TILE_SIZE, self.TILE_SIZE))
+                                marked.append(key)
+                                marked.append(f'{x+self.TILE_SIZE} {y}')
+                                marked.append(f'{x} {y+self.TILE_SIZE}')
+                                marked.append(f'{x+self.TILE_SIZE} {y+self.TILE_SIZE}')
+                                chunk_data[key] = [tmp_surf, tile_data[key][1], '4chunk']
+                            else:
+                                tile_data[key].append('1chunk')
+                                chunk_data[key] = tile_data[key]
                 else:
                     if tile_data[key][0] != None:
                         tile_data[key].append('1chunk')
@@ -107,9 +128,9 @@ class MapC:
                 if abs(player_pos[0] - x-self.TILE_SIZE/2) < self.x_dis and abs(player_pos[1] - y-self.TILE_SIZE/2) < self.y_dis:
                     surf.blit(self.world_data[key][0], (x-scroll[0], y-scroll[1]))
                 if abs(player_pos[0] - x-self.TILE_SIZE/2) < self.sim_dis and abs(player_pos[1] - y-self.TILE_SIZE/2) < self.sim_dis:
-                    if self.world_data[key][1] == 'tile11.png' or self.world_data[key][2] == 'tile11.png':
-                        if self.world_data[key][1] == '4chunk':
+                    if self.world_data[key][1] == 'tile11.png':
+                        if self.world_data[key][2] == '4chunk':
                             rect_list.append(pygame.Rect(x, y, self.TILE_SIZE*2, self.TILE_SIZE*2))
-                        else:
+                        elif self.world_data[key][2] == '1chunk':
                             rect_list.append(pygame.Rect(x, y, self.TILE_SIZE, self.TILE_SIZE))
         return rect_list

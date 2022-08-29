@@ -4,7 +4,7 @@ from math import sqrt
 class Player:
     def __init__(self):
         self.size = 16
-        self.rect = pygame.Rect(67, 34, self.size/2, self.size/2)
+        self.rect = pygame.Rect(300, 300, self.size/2, self.size/2)
         self.image = {
             'run_right':[], 'run_left':[], 'run_up':[], 'run_down':[],
             'idle_right':[], 'idle_left':[], 'idle_up':[], 'idle_down':[]
@@ -50,10 +50,7 @@ class Player:
             self.curr_mov = 'run_left'
             self.pre_direction = 'left'
 
-        if not (self.vels[0] != 0 and self.vels[1] != 0):
-            self.pos[0] += self.vels[0] * dt
-            self.pos[1] += self.vels[1] * dt
-        else:
+        if (self.vels[0] != 0 and self.vels[1] != 0):
             #slow down for diagonal movement
             if self.vels[0] > -1 and self.vels[1] > -1:
                 speed = sqrt((self.vels[0] + self.vels[1])) / 2
@@ -75,16 +72,13 @@ class Player:
             self.image_id = 0
         self.image_id += 0.1 * dt
         surf.blit(player_image, (
-            self.rect.x-scroll[0], (self.rect.y+self.size/2)-scroll[1]
+            (self.rect.x-self.size/4)-scroll[0], (self.rect.y-self.size/2)-scroll[1]
         ))
-        pygame.draw.rect(surf, (255, 255, 255), (
-            (self.rect.x+self.size/4)-scroll[0], (self.rect.y+self.size)-scroll[1],
-            self.size/2, self.size/2), 1)
 
     def test_hit(self, rect_list):
         hits = []
         for rect in rect_list:
-            if rect.colliderect(self.rect):
+            if self.rect.colliderect(rect):
                 hits.append(rect)
         return hits
 
@@ -98,9 +92,11 @@ class Player:
             if self.vels[0] > 0:
                 self.rect.right = rect.left
                 self.pos[0] = self.rect.x
+                self.vels[0] = 0
             elif self.vels[0] < 0:
                 self.rect.left = rect.right
                 self.pos[0] = self.rect.x
+                self.vels[0] = 0
         #update player rect
         self.pos[1] += self.vels[1] * dt
         self.rect.y = self.pos[1]
@@ -109,6 +105,8 @@ class Player:
             if self.vels[1] > 0:
                 self.rect.bottom = rect.top
                 self.pos[1] = self.rect.y
+                self.vels[1] = 0
             elif self.vels[1] < 0:
                 self.rect.top = rect.bottom
                 self.pos[1] = self.rect.y
+                self.vels[1] = 0
