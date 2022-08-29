@@ -2,6 +2,7 @@ import pygame, sys
 from pygame.locals import *
 from player import Player
 from process_world import MapC
+pygame.init()
 
 pl = Player()
 
@@ -19,7 +20,7 @@ def main():
 
     world_data_dir = 'data/world/'
     image_dir = 'images/world/'
-    wp = MapC(world_data_dir + 'tiles', image_dir, [26, 150, 150])
+    wp = MapC(world_data_dir + 'tiles', image_dir, [26, 110, 100])
     wp.convert_tile_size(16)
     wp.slice_chunks()
 
@@ -43,7 +44,10 @@ def main():
             ticks = 0
 
         game_surf.fill((0, 0, 0))
-        rect_list = wp.show_map(game_surf, [pl.rect.x, pl.rect.y], scroll)
+        rect_list = wp.show_map(
+            game_surf, [pl.rect.x, pl.rect.y], scroll
+            )
+        wp.show_folliage(game_surf, [pl.rect.x, pl.rect.y], scroll)
 
         pl.colli(rect_list, dt)
 

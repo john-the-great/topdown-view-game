@@ -19,6 +19,13 @@ class MapC:
         self.x_dis = processed_distances[1]
         self.y_dis = processed_distances[2]
 
+        self.data = json.load(open(file_name + '_transparent' + '.json'))
+        self.folliage_data = {}
+        for key in self.data:
+            image = pygame.image.load(image_dir + '/' + self.data[key]).convert()
+            image.set_colorkey((0, 0, 0, 0))
+            self.folliage_data[key] = [image, self.data[key]]
+
     def convert_tile_size(self, TILE_SIZE):
         for key in self.world_data:
             self.world_data[key][0] = pygame.transform.scale(self.world_data[key][0], (TILE_SIZE, TILE_SIZE))
@@ -134,3 +141,11 @@ class MapC:
                         elif self.world_data[key][2] == '1chunk':
                             rect_list.append(pygame.Rect(x, y, self.TILE_SIZE, self.TILE_SIZE))
         return rect_list
+
+    def show_folliage(self, surf, player_pos, scroll):
+        for key in self.folliage_data:
+            pos = key.split()
+            x = int(pos[0])
+            y = int(pos[1])
+            if abs(player_pos[0] - x-self.TILE_SIZE/2) < self.x_dis and abs(player_pos[1] - y-self.TILE_SIZE/2) < self.y_dis:
+                surf.blit(self.folliage_data[key][0], (x-scroll[0], y-scroll[1]))

@@ -4,7 +4,7 @@ from math import sqrt
 class Player:
     def __init__(self):
         self.size = 16
-        self.rect = pygame.Rect(300, 300, self.size/2, self.size/2)
+        self.rect = pygame.Rect(300, 290, self.size/2, self.size/2)
         self.image = {
             'run_right':[], 'run_left':[], 'run_up':[], 'run_down':[],
             'idle_right':[], 'idle_left':[], 'idle_up':[], 'idle_down':[]
