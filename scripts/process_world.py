@@ -1,4 +1,4 @@
-from re import I
+from unicodedata import name
 import pygame
 import json
 import os
@@ -30,7 +30,21 @@ class MapC:
         self.animated_water = True
         self.water_image_id = 0
         dir = 'images/world/water_animation'
-        self.water_animation = [pygame.image.load(dir + '/' + name) for name in os.listdir(dir)]
+        images = os.listdir(dir)
+        sorted_ = []
+        for name in images:
+            for id, char in enumerate(name):
+                if char.isdigit():
+                    if name[id+1].isdigit():
+                        sorted_.append(int(char + name[id+1]))
+                        break
+                    else:
+                        sorted_.append(int(char))
+                        break
+        sorted_.sort()
+        for id, num in enumerate(sorted_):
+            sorted_[id] = 'water' + str(num) + '.png'
+        self.water_animation = [pygame.image.load(dir + '/' + name) for name in sorted_]
 
     def convert_tile_size(self, TILE_SIZE):
         for key in self.world_data:
@@ -154,9 +168,9 @@ class MapC:
     def show_map(self, surf, player_pos, dt, scroll = [0, 0]):
         rect_list = []
         if self.animated_water:
-            if self.water_image_id >= 14.7:
-                self.water_image_id = 0
             self.water_image_id += .08 * dt
+            if self.water_image_id >= 15:
+                self.water_image_id = 0
         for key in self.world_data:
             pos = key.split()
             x = int(pos[0])
