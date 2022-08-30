@@ -154,7 +154,7 @@ class MapC:
     def show_map(self, surf, player_pos, dt, scroll = [0, 0]):
         rect_list = []
         if self.animated_water:
-            if self.water_image_id >= 4.7:
+            if self.water_image_id >= 14.7:
                 self.water_image_id = 0
             self.water_image_id += .08 * dt
         for key in self.world_data:
