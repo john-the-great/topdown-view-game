@@ -1,5 +1,7 @@
+from re import I
 import pygame
 import json
+import os
 
 class MapC:
     def __init__(self, file_name, image_dir, processed_distances):
@@ -25,6 +27,10 @@ class MapC:
             image = pygame.image.load(image_dir + '/' + self.data[key]).convert()
             image.set_colorkey((0, 0, 0, 0))
             self.folliage_data[key] = [image, self.data[key]]
+        self.animated_water = True
+        self.water_image_id = 0
+        dir = 'images/world/water_animation'
+        self.water_animation = [pygame.image.load(dir + '/' + name) for name in os.listdir(dir)]
 
     def convert_tile_size(self, TILE_SIZE):
         for key in self.world_data:
@@ -83,33 +89,53 @@ class MapC:
                         if marked_key == key:
                             markedk = True
                     if not markedk:
-                        if tile_name == 'tile11.png':
-                            if tile_data[f'{x+self.TILE_SIZE} {y}'][1] == tile_name and tile_data[f'{x} {y+self.TILE_SIZE}'][1] == tile_name and tile_data[f'{x+self.TILE_SIZE} {y+self.TILE_SIZE}'][1] == tile_name: 
-                                tmp_surf = pygame.Surface((self.TILE_SIZE*2, self.TILE_SIZE*2))
-                                tmp_surf.blit(tile_data[key][0], (0, 0))
-                                tmp_surf.blit(tile_data[f'{x+self.TILE_SIZE} {y}'][0], (self.TILE_SIZE, 0))
-                                tmp_surf.blit(tile_data[f'{x} {y+self.TILE_SIZE}'][0], (0, self.TILE_SIZE))
-                                tmp_surf.blit(tile_data[f'{x+self.TILE_SIZE} {y+self.TILE_SIZE}'][0], (self.TILE_SIZE, self.TILE_SIZE))
-                                marked.append(key)
-                                marked.append(f'{x+self.TILE_SIZE} {y}')
-                                marked.append(f'{x} {y+self.TILE_SIZE}')
-                                marked.append(f'{x+self.TILE_SIZE} {y+self.TILE_SIZE}')
-                                chunk_data[key] = [tmp_surf, tile_data[key][1], '4chunk']
+                        if not self.animated_water:
+                            if tile_name == 'tile11.png':
+                                if tile_data[f'{x+self.TILE_SIZE} {y}'][1] == tile_name and tile_data[f'{x} {y+self.TILE_SIZE}'][1] == tile_name and tile_data[f'{x+self.TILE_SIZE} {y+self.TILE_SIZE}'][1] == tile_name: 
+                                    tmp_surf = pygame.Surface((self.TILE_SIZE*2, self.TILE_SIZE*2))
+                                    tmp_surf.blit(tile_data[key][0], (0, 0))
+                                    tmp_surf.blit(tile_data[f'{x+self.TILE_SIZE} {y}'][0], (self.TILE_SIZE, 0))
+                                    tmp_surf.blit(tile_data[f'{x} {y+self.TILE_SIZE}'][0], (0, self.TILE_SIZE))
+                                    tmp_surf.blit(tile_data[f'{x+self.TILE_SIZE} {y+self.TILE_SIZE}'][0], (self.TILE_SIZE, self.TILE_SIZE))
+                                    marked.append(key)
+                                    marked.append(f'{x+self.TILE_SIZE} {y}')
+                                    marked.append(f'{x} {y+self.TILE_SIZE}')
+                                    marked.append(f'{x+self.TILE_SIZE} {y+self.TILE_SIZE}')
+                                    chunk_data[key] = [tmp_surf, tile_data[key][1], '4chunk']
+                                else:
+                                    tile_data[key].append('1chunk')
+                                    chunk_data[key] = tile_data[key]
                             else:
-                                tile_data[key].append('1chunk')
-                                chunk_data[key] = tile_data[key]
+                                if tile_data[f'{x+self.TILE_SIZE} {y}'][1] != 'tile11.png' and tile_data[f'{x} {y+self.TILE_SIZE}'][1] != 'tile11.png' and tile_data[f'{x+self.TILE_SIZE} {y+self.TILE_SIZE}'][1] != 'tile11.png': 
+                                    tmp_surf = pygame.Surface((self.TILE_SIZE*2, self.TILE_SIZE*2))
+                                    tmp_surf.blit(tile_data[key][0], (0, 0))
+                                    tmp_surf.blit(tile_data[f'{x+self.TILE_SIZE} {y}'][0], (self.TILE_SIZE, 0))
+                                    tmp_surf.blit(tile_data[f'{x} {y+self.TILE_SIZE}'][0], (0, self.TILE_SIZE))
+                                    tmp_surf.blit(tile_data[f'{x+self.TILE_SIZE} {y+self.TILE_SIZE}'][0], (self.TILE_SIZE, self.TILE_SIZE))
+                                    marked.append(key)
+                                    marked.append(f'{x+self.TILE_SIZE} {y}')
+                                    marked.append(f'{x} {y+self.TILE_SIZE}')
+                                    marked.append(f'{x+self.TILE_SIZE} {y+self.TILE_SIZE}')
+                                    chunk_data[key] = [tmp_surf, tile_data[key][1], '4chunk']
+                                else:
+                                    tile_data[key].append('1chunk')
+                                    chunk_data[key] = tile_data[key]
                         else:
-                            if tile_data[f'{x+self.TILE_SIZE} {y}'][1] != 'tile11.png' and tile_data[f'{x} {y+self.TILE_SIZE}'][1] != 'tile11.png' and tile_data[f'{x+self.TILE_SIZE} {y+self.TILE_SIZE}'][1] != 'tile11.png': 
-                                tmp_surf = pygame.Surface((self.TILE_SIZE*2, self.TILE_SIZE*2))
-                                tmp_surf.blit(tile_data[key][0], (0, 0))
-                                tmp_surf.blit(tile_data[f'{x+self.TILE_SIZE} {y}'][0], (self.TILE_SIZE, 0))
-                                tmp_surf.blit(tile_data[f'{x} {y+self.TILE_SIZE}'][0], (0, self.TILE_SIZE))
-                                tmp_surf.blit(tile_data[f'{x+self.TILE_SIZE} {y+self.TILE_SIZE}'][0], (self.TILE_SIZE, self.TILE_SIZE))
-                                marked.append(key)
-                                marked.append(f'{x+self.TILE_SIZE} {y}')
-                                marked.append(f'{x} {y+self.TILE_SIZE}')
-                                marked.append(f'{x+self.TILE_SIZE} {y+self.TILE_SIZE}')
-                                chunk_data[key] = [tmp_surf, tile_data[key][1], '4chunk']
+                            if tile_name != 'tile11.png':
+                                if tile_data[f'{x+self.TILE_SIZE} {y}'][1] != 'tile11.png' and tile_data[f'{x} {y+self.TILE_SIZE}'][1] != 'tile11.png' and tile_data[f'{x+self.TILE_SIZE} {y+self.TILE_SIZE}'][1] != 'tile11.png':
+                                    tmp_surf = pygame.Surface((self.TILE_SIZE*2, self.TILE_SIZE*2))
+                                    tmp_surf.blit(tile_data[key][0], (0, 0))
+                                    tmp_surf.blit(tile_data[f'{x+self.TILE_SIZE} {y}'][0], (self.TILE_SIZE, 0))
+                                    tmp_surf.blit(tile_data[f'{x} {y+self.TILE_SIZE}'][0], (0, self.TILE_SIZE))
+                                    tmp_surf.blit(tile_data[f'{x+self.TILE_SIZE} {y+self.TILE_SIZE}'][0], (self.TILE_SIZE, self.TILE_SIZE))
+                                    marked.append(key)
+                                    marked.append(f'{x+self.TILE_SIZE} {y}')
+                                    marked.append(f'{x} {y+self.TILE_SIZE}')
+                                    marked.append(f'{x+self.TILE_SIZE} {y+self.TILE_SIZE}')
+                                    chunk_data[key] = [tmp_surf, tile_data[key][1], '4chunk']
+                                else:
+                                    tile_data[key].append('1chunk')
+                                    chunk_data[key] = tile_data[key]
                             else:
                                 tile_data[key].append('1chunk')
                                 chunk_data[key] = tile_data[key]
@@ -125,15 +151,26 @@ class MapC:
 
         return pygame.Rect(x, y, width, height), tx, ty, width, height
 
-    def show_map(self, surf, player_pos, scroll = [0, 0]):
+    def show_map(self, surf, player_pos, dt, scroll = [0, 0]):
         rect_list = []
+        if self.animated_water:
+            if self.water_image_id >= 4.7:
+                self.water_image_id = 0
+            self.water_image_id += .08 * dt
         for key in self.world_data:
             pos = key.split()
             x = int(pos[0])
             y = int(pos[1])
             if not self.world_data[key][0] == None:
                 if abs(player_pos[0] - x-self.TILE_SIZE/2) < self.x_dis and abs(player_pos[1] - y-self.TILE_SIZE/2) < self.y_dis:
-                    surf.blit(self.world_data[key][0], (x-scroll[0], y-scroll[1]))
+                    if not self.animated_water:
+                        surf.blit(self.world_data[key][0], (x-scroll[0], y-scroll[1]))
+                        surf.blit(self.world_data[key][0], (x-scroll[0], y-scroll[1]))
+                    else:
+                        if self.world_data[key][1] != 'tile11.png':
+                            surf.blit(self.world_data[key][0], (x-scroll[0], y-scroll[1]))
+                        else:
+                            surf.blit(self.water_animation[int(self.water_image_id)], (x-scroll[0], y-scroll[1]))
                 if abs(player_pos[0] - x-self.TILE_SIZE/2) < self.sim_dis and abs(player_pos[1] - y-self.TILE_SIZE/2) < self.sim_dis:
                     if self.world_data[key][1] == 'tile11.png':
                         if self.world_data[key][2] == '4chunk':
