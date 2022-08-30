@@ -47,6 +47,7 @@ def main():
         rect_list = wp.show_map(
             game_surf, [pl.rect.x, pl.rect.y], dt, scroll
             )
+        change_water_image = False
         wp.show_folliage(game_surf, [pl.rect.x, pl.rect.y], scroll)
 
         pl.colli(rect_list, dt)

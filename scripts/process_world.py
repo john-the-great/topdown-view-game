@@ -1,7 +1,7 @@
-from unicodedata import name
 import pygame
 import json
 import os
+from random import randint
 
 class MapC:
     def __init__(self, file_name, image_dir, processed_distances):
@@ -168,8 +168,8 @@ class MapC:
     def show_map(self, surf, player_pos, dt, scroll = [0, 0]):
         rect_list = []
         if self.animated_water:
-            self.water_image_id += .08 * dt
-            if self.water_image_id >= 15:
+            self.water_image_id += .04 * dt
+            if self.water_image_id >= len(self.water_animation):
                 self.water_image_id = 0
         for key in self.world_data:
             pos = key.split()
