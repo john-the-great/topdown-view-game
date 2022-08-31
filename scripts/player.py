@@ -1,5 +1,21 @@
+from tracemalloc import start
 import pygame, os
-from math import sqrt 
+from math import sqrt
+
+class Tools:
+    def __init__(self, type, image, frame_image, pos):
+        self.frame_image = frame_image
+        self.pos = pos
+        self.type = type
+        self.image = image
+
+    def render(self, surf):
+        surf.blit(self.frame_image, (
+            self.pos[0], self.pos[1]
+        ))
+        surf.blit(self.image, (
+            self.pos[0], self.pos[1]
+        ))
 
 class Player:
     def __init__(self):
@@ -25,6 +41,28 @@ class Player:
         self.pos = [self.rect.x, self.rect.y]
         self.vels = [0, 0]
         self.movement_speed = 1
+
+        #Inventory#
+        #hotbar#
+        self.frame_image = pygame.transform.scale(
+            pygame.image.load('images/inventory/hotbar/hotbarframe.png'), (64, 64))
+        self.tools = []
+        hoe_image = pygame.transform.scale(pygame.image.load(
+            'images/inventory/base_tools/hoe.png'), (64, 64))
+        shovel_image = pygame.transform.scale(pygame.image.load(
+            'images/inventory/base_tools/shovel.png'), (64, 64))
+        self.tools.append(Tools('hoe', hoe_image, self.frame_image, [
+            0, 1]))
+        self.tools.append(Tools('shovel', shovel_image, self.frame_image, [
+            66, 1]))
+
+        self.curr_tool = 0
+        #hotbar#
+        #Inventory#
+
+    def process_tools(self, surf):
+        for tool in self.tools:
+            tool.render(surf)
 
     def movement(self, dt):
         keys = pygame.key.get_pressed()

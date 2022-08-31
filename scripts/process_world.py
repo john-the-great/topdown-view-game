@@ -1,3 +1,4 @@
+import chunk
 import pygame
 import json
 import os
@@ -165,6 +166,66 @@ class MapC:
 
         return pygame.Rect(x, y, width, height), tx, ty, width, height
 
+    def slice_animated_chunks(self):
+        positions = [[], []]
+        for key in self.world_data:
+            pos = key.split()
+            x = int(pos[0])
+            y = int(pos[1])
+            positions[0].append(x)
+            positions[1].append(y)
+        tx = min(positions[0])
+        ty = min(positions[1])
+        width = abs(max(positions[0]) - tx)+self.TILE_SIZE
+        height = abs(max(positions[1]) - ty)+self.TILE_SIZE
+
+        tile_data = {}
+        for wlength in range(width):
+            x = tx+wlength
+            for hlength in range(height):
+                y = ty+hlength
+                if x % self.TILE_SIZE == 0 and y % self.TILE_SIZE == 0:
+                    has_data = False
+                    for key in self.world_data:
+                        if key == f'{x} {y}':
+                            tile_data[key] = self.world_data[key]
+                            has_data = True
+                            break
+                    if not has_data:
+                        tile_data[f'{x} {y}'] = [None, None]
+
+        marked = []
+        for key in tile_data:
+            tile_name = tile_data[key][1]
+            try:
+                # and tile_data[key][1] != 'tile.png'
+                if tile_data[key][0] != None:
+                    pos = key.split()
+                    x = int(pos[0])
+                    y = int(pos[1])
+                    markedk = False
+                    for marked_key in marked:
+                        if marked_key == key:
+                            markedk = True
+                    if not markedk:
+                        if tile_name == 'tile11.png':
+                            if tile_data[f'{x+self.TILE_SIZE} {y}'][1] == tile_name and tile_data[f'{x} {y+self.TILE_SIZE}'][1] == tile_name and tile_data[f'{x+self.TILE_SIZE} {y+self.TILE_SIZE}'][1] == tile_name: 
+                                marked.append(key)
+                                marked.append(f'{x+self.TILE_SIZE} {y}')
+                                marked.append(f'{x} {y+self.TILE_SIZE}')
+                                marked.append(f'{x+self.TILE_SIZE} {y+self.TILE_SIZE}')
+                                self.world_data[key] = [tile_data[key][0], tile_data[key][1], '4chunk']
+                                self.world_data[f'{x+self.TILE_SIZE} {y}'] = [tile_data[key][0], tile_data[key][1], '0chunk']
+                                self.world_data[f'{x} {y+self.TILE_SIZE}'] = [tile_data[key][0], tile_data[key][1], '0chunk']
+                                self.world_data[f'{x+self.TILE_SIZE} {y+self.TILE_SIZE}'] = [tile_data[key][0], tile_data[key][1], '0chunk']
+                else:
+                    if tile_data[key][0] != None:
+                        tile_data[key].append('1chunk')
+                        self.world_data[key] = tile_data[key]
+            except:
+                tile_data[key].append('1chunk')
+                self.world_data[key] = tile_data[key]
+
     def show_map(self, surf, player_pos, dt, scroll = [0, 0]):
         rect_list = []
         if self.animated_water:
@@ -179,7 +240,9 @@ class MapC:
                 if abs(player_pos[0] - x-self.TILE_SIZE/2) < self.x_dis and abs(player_pos[1] - y-self.TILE_SIZE/2) < self.y_dis:
                     if not self.animated_water:
                         surf.blit(self.world_data[key][0], (x-scroll[0], y-scroll[1]))
-                        surf.blit(self.world_data[key][0], (x-scroll[0], y-scroll[1]))
+                        #pygame.draw.rect(surf, (255, 255, 255), (
+                        #   x-scroll[0], y-scroll[1], self.world_data[key][0].get_width(), self.world_data[key][0].get_height() 
+                        #), 1)
                     else:
                         if self.world_data[key][1] != 'tile11.png':
                             surf.blit(self.world_data[key][0], (x-scroll[0], y-scroll[1]))
@@ -191,6 +254,7 @@ class MapC:
                             rect_list.append(pygame.Rect(x, y, self.TILE_SIZE*2, self.TILE_SIZE*2))
                         elif self.world_data[key][2] == '1chunk':
                             rect_list.append(pygame.Rect(x, y, self.TILE_SIZE, self.TILE_SIZE))
+                            
         return rect_list
 
     def show_folliage(self, surf, player_pos, scroll):

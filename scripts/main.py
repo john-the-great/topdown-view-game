@@ -20,9 +20,12 @@ def main():
 
     world_data_dir = 'data/world/'
     image_dir = 'images/world/'
-    wp = MapC(world_data_dir + 'tiles', image_dir, [26, 110, 100])
+    wp = MapC(world_data_dir + 'tiles', image_dir, [150, 110, 100])
     wp.convert_tile_size(16)
+    wp.animated_water = True
     wp.slice_chunks()
+    if wp.animated_water:
+        wp.slice_animated_chunks()
 
     tscroll = [0, 0]
 
@@ -47,7 +50,6 @@ def main():
         rect_list = wp.show_map(
             game_surf, [pl.rect.x, pl.rect.y], dt, scroll
             )
-        change_water_image = False
         wp.show_folliage(game_surf, [pl.rect.x, pl.rect.y], scroll)
 
         pl.colli(rect_list, dt)
@@ -57,17 +59,25 @@ def main():
                 case pygame.QUIT:
                     pygame.quit()
                     sys.exit()
+                case pygame.KEYDOWN:
+                    match event.key:
+                        case pygame.K_1:
+                            pass
+                        case pygame.K_2:
+                            pass
 
         pl.animate(game_surf, dt, scroll)
 
         #for rect in rect_list:
           #  pygame.draw.rect(game_surf, (255, 0, 0), (
             #    rect[0]-scroll[0], rect[1]-scroll[1],
-              #  rect[2], rect[2]), 1)
+              #  16, 16), 1)
         upscaled_surf = pygame.transform.scale(
             game_surf, WINDOW_SIZE
         )
         window.blit(upscaled_surf, (0, 0))
+
+        pl.process_tools(window)
         pygame.display.update()
 
 if __name__ == '__main__':
