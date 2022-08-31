@@ -1,21 +1,15 @@
-from tracemalloc import start
 import pygame, os
 from math import sqrt
 
 class Tools:
-    def __init__(self, type, image, frame_image, pos):
-        self.frame_image = frame_image
+    def __init__(self, type, image, pos):
         self.pos = pos
         self.type = type
         self.image = image
 
     def render(self, surf):
-        surf.blit(self.frame_image, (
-            self.pos[0], self.pos[1]
-        ))
         surf.blit(self.image, (
-            self.pos[0], self.pos[1]
-        ))
+            self.pos[0], self.pos[1]))
 
 class Player:
     def __init__(self):
@@ -44,25 +38,32 @@ class Player:
 
         #Inventory#
         #hotbar#
-        self.frame_image = pygame.transform.scale(
-            pygame.image.load('images/inventory/hotbar/hotbarframe.png'), (64, 64))
+        self.frame_image = pygame.image.load('images/inventory/hotbar/hotbarframe.png')
         self.tools = []
-        hoe_image = pygame.transform.scale(pygame.image.load(
-            'images/inventory/base_tools/hoe.png'), (64, 64))
-        shovel_image = pygame.transform.scale(pygame.image.load(
-            'images/inventory/base_tools/shovel.png'), (64, 64))
-        self.tools.append(Tools('hoe', hoe_image, self.frame_image, [
+        hoe_image = pygame.image.load('images/inventory/base_tools/hoe.png')
+        hoe_with_frame = pygame.Surface((16, 16))
+        hoe_with_frame.blit(self.frame_image, (0, 0))
+        hoe_with_frame.blit(hoe_image, (0, 0))
+        hoe_with_frame.set_colorkey((0, 0, 0, 0))
+
+        shovel_image = pygame.image.load('images/inventory/base_tools/shovel.png')
+        shovel_with_frame = pygame.Surface((16, 16))
+        shovel_with_frame.blit(self.frame_image, (0, 0))
+        shovel_with_frame.blit(shovel_image, (0, 0))
+        shovel_with_frame.set_colorkey((0, 0, 0, 0))
+
+        self.tools.append(Tools('hoe', hoe_with_frame, [
             0, 1]))
-        self.tools.append(Tools('shovel', shovel_image, self.frame_image, [
-            66, 1]))
+        self.tools.append(Tools('shovel', shovel_with_frame, [
+            0, 1]))
 
         self.curr_tool = 0
+        self.tool_amount = len(self.tools)-1
         #hotbar#
         #Inventory#
 
     def process_tools(self, surf):
-        for tool in self.tools:
-            tool.render(surf)
+        self.tools[self.curr_tool].render(surf)
 
     def movement(self, dt):
         keys = pygame.key.get_pressed()

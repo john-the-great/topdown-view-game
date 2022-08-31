@@ -59,14 +59,17 @@ def main():
                 case pygame.QUIT:
                     pygame.quit()
                     sys.exit()
-                case pygame.KEYDOWN:
-                    match event.key:
-                        case pygame.K_1:
-                            pass
-                        case pygame.K_2:
-                            pass
+                case pygame.MOUSEBUTTONDOWN:
+                    match event.button:
+                        case 4:
+                            if pl.curr_tool < pl.tool_amount:
+                                pl.curr_tool += 1
+                        case 5:
+                            if pl.curr_tool > 0:
+                                pl.curr_tool -= 1
 
         pl.animate(game_surf, dt, scroll)
+        pl.process_tools(game_surf)
 
         #for rect in rect_list:
           #  pygame.draw.rect(game_surf, (255, 0, 0), (
@@ -77,7 +80,6 @@ def main():
         )
         window.blit(upscaled_surf, (0, 0))
 
-        pl.process_tools(window)
         pygame.display.update()
 
 if __name__ == '__main__':
