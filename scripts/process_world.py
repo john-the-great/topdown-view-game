@@ -1,4 +1,5 @@
 import chunk
+from cmath import rect
 import pygame
 import json
 import os
@@ -257,10 +258,14 @@ class MapC:
                             
         return rect_list
 
-    def show_folliage(self, surf, player_pos, scroll):
+    def show_folliage(self, surf, player_pos, rect_list, scroll):
         for key in self.folliage_data:
             pos = key.split()
             x = int(pos[0])
             y = int(pos[1])
             if abs(player_pos[0] - x-self.TILE_SIZE/2) < self.x_dis and abs(player_pos[1] - y-self.TILE_SIZE/2) < self.y_dis:
                 surf.blit(self.folliage_data[key][0], (x-scroll[0], y-scroll[1]))
+            if self.folliage_data[key][1] == 'tile24.png':
+                if abs(player_pos[0] - x-self.TILE_SIZE/2) < self.sim_dis and abs(player_pos[1] - y-self.TILE_SIZE/2) < self.sim_dis:
+                    rect_list.append(pygame.Rect(x+self.TILE_SIZE*1.4, y+self.TILE_SIZE*3, self.TILE_SIZE, self.TILE_SIZE))
+        return rect_list

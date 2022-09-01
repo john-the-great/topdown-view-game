@@ -50,7 +50,8 @@ def main():
         rect_list = wp.show_map(
             game_surf, [pl.rect.x, pl.rect.y], dt, scroll
             )
-        wp.show_folliage(game_surf, [pl.rect.x, pl.rect.y], scroll)
+        pl.animate(game_surf, dt, scroll)
+        rect_list = wp.show_folliage(game_surf, [pl.rect.x, pl.rect.y], rect_list, scroll)
 
         pl.colli(rect_list, dt)
 
@@ -68,13 +69,13 @@ def main():
                             if pl.curr_tool > 0:
                                 pl.curr_tool -= 1
 
-        pl.animate(game_surf, dt, scroll)
+        #pl.animate(game_surf, dt, scroll)
         pl.process_tools(game_surf)
 
         #for rect in rect_list:
-          #  pygame.draw.rect(game_surf, (255, 0, 0), (
-            #    rect[0]-scroll[0], rect[1]-scroll[1],
-              #  16, 16), 1)
+        #    pygame.draw.rect(game_surf, (255, 0, 0), (
+        #        rect[0]-scroll[0], rect[1]-scroll[1],
+        #        16, 16), 1)
         upscaled_surf = pygame.transform.scale(
             game_surf, WINDOW_SIZE
         )
